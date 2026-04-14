@@ -1,13 +1,14 @@
 <?php
-/* Plugin Name: RF Meta Setter */
+/**
+ * Plugin Name: RF Meta Setter
+ * Version: 1.1
+ */
 add_action('init', function() {
-    static $done = false;
-    if ($done) return;
-    $done = true;
-    $p = 6069;
-    update_post_meta($p, 'top_title', 'Kennisbank / AI Automatisering');
-    update_post_meta($p, '_top_title', 'field_63fe032a1c01c');
-    update_post_meta($p, 'intro', 'Ontdek hoe je met AI tools zoals Microsoft Copilot, ChatGPT en Google Sheets AI jouw Excel- en spreadsheetwerk automatiseert en uren per week bespaart.');
-    update_post_meta($p, '_intro', 'field_6282421bc9a93');
-    deactivate_plugins(plugin_basename(__FILE__));
+    global $wpdb;
+    // Remove self from active_plugins
+    $active = get_option('active_plugins', []);
+    $self = 'rf-meta-setter-pub-main/rf-meta-setter.php';
+    $active = array_filter($active, fn($p) => $p !== $self);
+    $wpdb->update($wpdb->options, ['option_value' => serialize(array_values($active))], ['option_name' => 'active_plugins']);
+    wp_cache_delete('active_plugins', 'options');
 });
